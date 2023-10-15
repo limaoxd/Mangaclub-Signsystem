@@ -1,6 +1,10 @@
 import bluetooth
 import hashlib
 import time
+import machine
+import ubinascii
+import network
+
 from machine import Pin
 
 class LINEBeacon:
@@ -47,7 +51,14 @@ tx = b'\x7F'
 beacon = LINEBeacon()
 led = Pin("LED", Pin.OUT)
 blink = 1
+
+#28:CD:C1:05:14:9B
 while True:
+    '''add = network.WLAN(network.STA_IF)
+    add.active(True)
+    address = add.config('mac')
+    print(ubinascii.hexlify(address).decode())'''
+
     led.value(blink)
     time.sleep(1)
     blink = not blink
