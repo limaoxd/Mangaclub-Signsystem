@@ -24,7 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MCSS"
         tools:targetApi="31">
-        <service android:name=".BleService" />
+        <service android:name=".BleService"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -32,7 +32,6 @@
             android:theme="@style/Theme.MCSS">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

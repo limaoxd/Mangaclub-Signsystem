@@ -41,7 +41,6 @@ class LINEBeacon:
             0x11, 0x16, 0x6F, 0xFE, 0x02
         ]) + self._hwid + tx_power + secure_message + (b'\x00' * 6)
         self._ble.gap_advertise(152, adv_data=adv_payload)
-        #print(adv_payload)
         # Incrementing the timestamp
         self._timestamp += 1
 

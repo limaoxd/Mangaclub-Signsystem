@@ -13,9 +13,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import android.Manifest
 import android.os.Bundle
 import android.os.Build
+import android.os.Looper
 import android.os.IBinder
 import android.os.Handler
-import android.os.Looper
 import android.app.Service
 import android.widget.Button
 import android.widget.EditText
@@ -34,7 +34,7 @@ data class User(val name: String)
 
 var State = false
 var Name = ""
-
+val Time = 30
 class BleService : Service() {
     private val scanSettings = ScanSettings.Builder()
         .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
@@ -42,7 +42,7 @@ class BleService : Service() {
     private val handler = Handler(Looper.getMainLooper())
     private val mainHandler = Handler(Looper.getMainLooper())
 
-    //after 30 seconds will post leave
+    //after several seconds will post leave
     private val checkInactivity = object : Runnable {
         override fun run() {
             if (State) {
@@ -78,8 +78,9 @@ class BleService : Service() {
     fun startInactivityTimer() {
         // Remove any existing callbacks
         handler.removeCallbacks(checkInactivity)
-        // Schedule the checkInactivity Runnable after 30 seconds
-        handler.postDelayed(checkInactivity, 10000) // 30 seconds
+        // Schedule the checkInactivity Runnable after 10 seconds
+        val timer: Long = 1000 * Time.toLong()
+        handler.postDelayed(checkInactivity, timer) // 10 seconds
     }
 
     fun Context.bluetoothAdapter(): BluetoothAdapter? =
@@ -111,6 +112,7 @@ class BleService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        //Start service
         startBleScan()
     }
 
@@ -140,8 +142,8 @@ class BleService : Service() {
     }
 
     override fun onDestroy() {
+        stopBleScan()
         super.onDestroy()
-        startBleScan()
     }
 }
 
@@ -173,6 +175,7 @@ class MainActivity : ComponentActivity() {
         val button = findViewById<Button>(R.id.button)
         val debug_terminal = findViewById<TextView>(R.id.debug)
 
+        //request permissions
         val permissions = arrayOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,  // For coarse location
             // OR
@@ -222,6 +225,7 @@ class MainActivity : ComponentActivity() {
                     writer.write(json.toString())
                     writer.close()
 
+                    startService(bleServiceIntent)
                     debug_terminal.text = name + " register success!"
                 }catch(e: Exception){
                     debug_terminal.text = "Write file failed with unexpect situation."
